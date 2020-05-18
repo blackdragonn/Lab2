@@ -67,8 +67,8 @@ class StateMachine:
             current_state=next_state
             clk_n-=1
     @ParamCheck(object)
-    def visualize(self):
-        time=[4,2,4,2]
+    def visualize(self,clk1,clk2):
+        time=[clk1,clk2,clk1,clk2]
         res = []
         res.append("digraph G {")
         res.append("  rankdir=LR;")
@@ -76,13 +76,12 @@ class StateMachine:
             res.append("  {}[];".format(v))
         for index,v in enumerate(self.state):
             for index2,q in enumerate(self.state):
-                print(index,index2)
                 if(v==q):
                     res.append('  {} -> {}[label="clk<{}; clk++"];'.format(v, q, time[index]))
                 if index2-index==1:
                     res.append('  {} -> {}[label="clk>={}; clk=0"];'.format(v, q, time[index]))
         length=len(self.state)
-        res.append('  {} -> {}[label="clk>={}; clk=0"];'.format(self.state[length-1], self.state[0], 2))
+        res.append('  {} -> {}[label="clk>={}; clk=0"];'.format(self.state[length-1], self.state[0], clk2))
         
         res.append("}")
 
@@ -95,17 +94,18 @@ if __name__ == "__main__":
     m.add_state("s1","A yellow,B red")
     m.add_state("s2","A red,B green")
     m.add_state("s3","A red,B yellow")
-
-    m.add_transition("s0",lambda clk: (clk+1,"s0") if clk<4 else (clk and 0,"s1"))
-    m.add_transition("s1",lambda clk: (clk+1,"s1") if clk<2 else (clk and 0,"s2"))
-    m.add_transition("s2",lambda clk: (clk+1,"s2") if clk<4 else (clk and 0,"s3"))
-    m.add_transition("s3",lambda clk: (clk+1,"s3") if clk<2 else (clk and 0,"s0"))
+    clk1 = int(input('green light last:'))
+    clk2 = int(input('yellow light last:'))
+    m.add_transition("s0",lambda clk: (clk+1,"s0") if clk<clk1 else (clk and 0,"s1"))
+    m.add_transition("s1",lambda clk: (clk+1,"s1") if clk<clk2 else (clk and 0,"s2"))
+    m.add_transition("s2",lambda clk: (clk+1,"s2") if clk<clk1 else (clk and 0,"s3"))
+    m.add_transition("s3",lambda clk: (clk+1,"s3") if clk<clk2 else (clk and 0,"s0"))
 
     m.run(20)
     print(m.state_history)
     print(m.transition_history)
 
-    dot=m.visualize()
+    dot=m.visualize(clk1,clk2)
     f= open('fsm.dot','w') 
     f.write(dot)
     f.close()
