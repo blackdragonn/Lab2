@@ -2,7 +2,42 @@ import unittest
 from Rgb_light import *
 
 class FsmTest(unittest.TestCase):
-    def test_rgbLight(self):
+    def test_get_start(self):
+        m = StateMachine()
+        m.set_start("s0")
+        self.assertEqual(m.startState, 's0')
+
+    def test_add_state(self):
+        m = StateMachine()
+        m.set_start("s0")
+        m.add_state("s0", "A green,B red")
+        m.add_state("s1", "A yellow,B red")
+        m.add_state("s2", "A red,B green")
+        m.add_state("s3", "A red,B yellow")
+        self.assertEqual(m.stateAction,{"s0":"A green,B red",
+                                            "s1":"A yellow,B red",
+                                            "s2": "A red,B green",
+                                            "s3": "A red,B yellow"})
+
+    def test_add_transition(self):
+        clk1 = 4
+        clk2 = 2
+        m = StateMachine()
+        m.set_start("s0")
+        m.add_state("s0", "A green,B red")
+        m.add_state("s1", "A yellow,B red")
+        m.add_state("s2", "A red,B green")
+        m.add_state("s3", "A red,B yellow")
+        m.add_transition("s0", lambda clk: (clk + 1, "s0") if clk < clk1 else (clk and 0, "s1"))
+        m.add_transition("s1", lambda clk: (clk + 1, "s1") if clk < clk2 else (clk and 0, "s2"))
+        m.add_transition("s2", lambda clk: (clk + 1, "s2") if clk < clk1 else (clk and 0, "s3"))
+        m.add_transition("s3", lambda clk: (clk + 1, "s3") if clk < clk2 else (clk and 0, "s0"))
+        self.assertEqual(m.handlers, {"s0" :lambda clk: (clk + 1, "s0") if clk < clk1 else (clk and 0, "s1"),
+                                            "s1": lambda clk: (clk + 1, "s1") if clk < clk2 else (clk and 0, "s2"),
+                                            "s2": lambda clk: (clk + 1, "s2") if clk < clk1 else (clk and 0, "s3"),
+                                            "s3": lambda clk: (clk + 1, "s3") if clk < clk2 else (clk and 0, "s0")})
+
+    def test_run(self):
         m = StateMachine()
         m.set_start("s0")
         m.add_state("s0","A green,B red")
