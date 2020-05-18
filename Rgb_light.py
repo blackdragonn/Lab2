@@ -88,14 +88,14 @@ class StateMachine:
         return "\n".join(res)
 
 if __name__ == "__main__":
+    clk1 = int(input('green light last:'))
+    clk2 = int(input('yellow light last:'))
     m = StateMachine()
     m.set_start("s0")
     m.add_state("s0","A green,B red")
     m.add_state("s1","A yellow,B red")
     m.add_state("s2","A red,B green")
     m.add_state("s3","A red,B yellow")
-    clk1 = int(input('green light last:'))
-    clk2 = int(input('yellow light last:'))
     m.add_transition("s0",lambda clk: (clk+1,"s0") if clk<clk1 else (clk and 0,"s1"))
     m.add_transition("s1",lambda clk: (clk+1,"s1") if clk<clk2 else (clk and 0,"s2"))
     m.add_transition("s2",lambda clk: (clk+1,"s2") if clk<clk1 else (clk and 0,"s3"))
