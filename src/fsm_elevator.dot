@@ -1,0 +1,16 @@
+digraph G {
+  rankdir=LR;
+  StateStopping[];
+  StateGoingUp[];
+  StateGoingDown[];
+  StateOpened[];
+  StateWarning[];
+  StateStopping -> StateGoingUp[label="EVENT_UP"];
+  StateStopping -> StateGoingDown[label="EVENT_DOWN"];
+  StateStopping -> StateOpened[label="EVENT_OPEN"];
+  StateGoingUp -> StateStopping[label="EVENT_STOP"];
+  StateGoingDown -> StateStopping[label="EVENT_STOP"];
+  StateOpened -> StateStopping[label="EVENT_CLOSE"];
+  StateOpened -> StateWarning[label="EVENT_WARN"];
+  StateWarning -> StateOpened[label="EVENT_DELWARN"];
+}
