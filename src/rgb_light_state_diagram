@@ -1,0 +1,15 @@
+digraph G {
+  rankdir=LR;
+  s0[];
+  s1[];
+  s2[];
+  s3[];
+  s0 -> s0[label="clk<3; clk++"];
+  s0 -> s1[label="clk>=3; clk=0"];
+  s1 -> s1[label="clk<1; clk++"];
+  s1 -> s2[label="clk>=1; clk=0"];
+  s2 -> s2[label="clk<3; clk++"];
+  s2 -> s3[label="clk>=3; clk=0"];
+  s3 -> s3[label="clk<1; clk++"];
+  s3 -> s0[label="clk>=1; clk=0"];
+}
